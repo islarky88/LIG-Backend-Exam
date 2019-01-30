@@ -1,0 +1,9 @@
+Options All -Indexes
+
+RewriteEngine On
+
+#api.php
+RewriteRule ^([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ api.php?key1=$1&key2=$2&key3=$3&key4=$4 [L]
+RewriteRule ^([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ api.php?key1=$1&key2=$2&key3=$3 [L]
+RewriteRule ^([A-Za-z0-9-_]+)/([A-Za-z0-9-_]+)$ api.php?key1=$1&key2=$2 [L]
+RewriteRule ^([A-Za-z0-9-_]+)$ api.php?key1=$1 [L]
