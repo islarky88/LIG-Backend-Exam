@@ -35,48 +35,102 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'posts') {
 
-      if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
-      if (isset($obj['content'])) { $content = mysqli_real_escape_string($obj['content']); } else { $content = ''; }
-      if (isset($obj['image'])) { $image = mysqli_real_escape_string($obj['image']); } else { $image = ''; }
+      // create comment
+      if ($key3 == 'comments' && $key2 != '') {
 
-      if ($title != '' && $content != '') {
+        $json = @file_get_contents('php://input');
+        $obj = json_decode($json, true);
 
-          $rawResponse = array (
-            'data' =>
-            array (
-              'title' => $title,
-              'content' => $content,
-              'slug' => titleToSlug($title),
-              'updated_at' => $mysqltime,
-              'created_at' => $mysqltime,
-              'id' => 1,
-              'user_id' => 1,
-            ),
+        if (isset($obj['body'])) { $body = sanitize($obj['body']); } else { $body = ''; }
+
+        if ($body != '') {
+
+          $rawResponse = array(
+              "data" => array(
+                  "body" => $body,
+                  "creator_id" => 1,
+                  "creator_type" => "App\\User",
+                  "commentable_id" => 1,
+                  "commentable_type" => "App\\Post",
+                  "parent_id" => null,
+                  "_lft" => 1,
+                  "_rgt" => 2,
+                  "updated_at" => $mysqltime,
+                  "created_at" => $mysqltime,
+                  "id" => 1
+              )
           );
 
-          header("HTTP/1.1 201 Created");
           echo json_encode($rawResponse);
 
+        // input errors in commenting
+        } else {
+
+          $rawResponse = array (
+                    'message' => 'Given data is invalid.',
+                  );
+
+          if ($body == '') {
+            $rawResponse['errors']['body'] = 'Comment Body should not be blank.';
+          }
+
+          header("HTTP/1.1 422 Unprocessable Entity");
+          echo json_encode($rawResponse);
+
+        } // end of comment create/errors
+
+      // create post
       } else {
 
-        $rawResponse = array (
-                  'message' => 'Given data is invalid.',
-                );
+        $json = @file_get_contents('php://input');
+        $obj = json_decode($json, true);
 
-        if ($title == '') {
-          $rawResponse['errors']['title'] = 'Title should not be blank.';
+        if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
+        if (isset($obj['content'])) { $content = sanitize($obj['content']); } else { $content = ''; }
+        if (isset($obj['image'])) { $image = sanitize($obj['image']); } else { $image = ''; }
+
+        if ($title != '' && $content != '') {
+
+            $rawResponse = array (
+              'data' =>
+              array (
+                'title' => $title,
+                'content' => $content,
+                'slug' => textToSlug($title),
+                'slug' => $image,
+                'updated_at' => $mysqltime,
+                'created_at' => $mysqltime,
+                'id' => 1,
+                'user_id' => 1,
+              ),
+            );
+
+            header("HTTP/1.1 201 Created");
+            echo json_encode($rawResponse);
+
+        // posting posts errors
+        } else {
+
+          $rawResponse = array (
+                    'message' => 'Given data is invalid.',
+                  );
+
+          if ($title == '') {
+            $rawResponse['errors']['title'] = 'Title should not be blank.';
+          }
+
+          if ($content == '') {
+            $rawResponse['errors']['content'] = 'Content should not be empty.';
+          }
+
+
+          header("HTTP/1.1 422 Unprocessable Entity");
+          //  print_r($rawResponse);
+          echo json_encode($rawResponse);
+
         }
 
-        if ($content == '') {
-          $rawResponse['errors']['content'] = 'Content should not be empty.';
-        }
-
-
-        header("HTTP/1.1 422 Unprocessable Entity");
-        //  print_r($rawResponse);
-        echo json_encode($rawResponse);
-
-      }
+      } // End of POST posts/comments
 
 
 } // End of posts key1
@@ -249,7 +303,7 @@ if (isset($_GET['key4'])) {
 
       } else {
 
-        $newtitle = $key2;
+        $newtitle = 'First Post';
         $slug = textToSlug($key2);
 
           $rawResponse = array (
@@ -382,42 +436,86 @@ if (isset($_GET['key4'])) {
   } else if ($method === 'PATCH') {
     //http://dev.cody.asia/api/posts/first-post
 
+    // check if API request is posts
     if ($key1 == 'posts') {
 
-      // Check if post exists
+      // checks if api request is for comments
+      if ($key3 == 'comments' && $key2 != '') {
 
-      // $query = textToSlug($key2);
-      // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
-      // $main = $result->fetch_object();
-      // $postid = $main->id;
+        // Check if post exists
 
-      if ($postid != NULL) {
+        // $query = intval($key4);
+        // $result = $mysqli->query("SELECT * FROM comments WHERE id = '$query' LIMIT 1");
+        // $main = $result->fetch_object();
+        // $commentid = $main->id;
 
-          //deletePost();
-          $updatedTitle = 'Updated title';
-          $updatedContent = 'Updated Lorem Ipsum Content Holder';
-          $createPostDate = 'created at date here';
+        // if comment exist based on commendid search
+        if ($commentid != NULL) {
 
-          $rawResponse = array(
-              "data" => array(
-                  "id" => 1,
-                  "user_id" => 1,
-                  "title" => $updatedTitle,
-                  "slug" => textToSlug($updatedTitle),
-                  "content" => $updatedContent,
-                  "created_at" => $createPostDate,
-                  "updated_at" => $mysqltime,
-                  "deleted_at" => null
-              )
-          );
+            //$mysqli->query("UPDATE comments SET body = '$commentBody' WHERE id = '$commentid' LIMIT 1");
+              $rawResponse = array (
+                "data" => array (
+                    "id" => 1,
+                    "title" => null,
+                    "body" => $commentBody,
+                    "commentable_type" => "App\\Post",
+                    "commentable_id" => 1,
+                    "creator_type" => "App\\User",
+                    "creator_id" => 1,
+                    "_lft" => 1,
+                    "_rgt" => 2,
+                    "parent_id" => null,
+                    "created_at" => "2019-01-23 02:09:12",
+                    "updated_at" => $mysqltime
+                )
+            );
 
-          echo json_encode($rawResponse);
 
+        } else {
 
+            echo '{"status": "comment does not exist"}';
 
+        } // end of  if commentid exist
+
+      // post patch / update?
       } else {
 
-          echo '{"status": "post does not exist"}';
+        // Check if post exists
+
+        // $query = textToSlug($key2);
+        // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
+        // $main = $result->fetch_object();
+        // $postid = $main->id;
+
+        if ($postid != NULL) {
+
+            //$mysqli->query("UPDATE posts SET content = '$updatedContent' WHERE id = '$postid' LIMIT 1");
+            $updatedTitle = 'Updated title';
+            $updatedContent = 'Updated Lorem Ipsum Content Holder';
+            $createPostDate = 'created at date here';
+
+            $rawResponse = array(
+                "data" => array(
+                    "id" => 1,
+                    "user_id" => 1,
+                    "title" => $updatedTitle,
+                    "slug" => textToSlug($updatedTitle),
+                    "content" => $updatedContent,
+                    "created_at" => $createPostDate,
+                    "updated_at" => $mysqltime,
+                    "deleted_at" => null
+                )
+            );
+
+            echo json_encode($rawResponse);
+
+
+
+        } else {
+
+            echo '{"status": "post does not exist"}';
+
+        }
 
       }
 
