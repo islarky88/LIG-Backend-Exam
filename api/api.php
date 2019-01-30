@@ -2,6 +2,7 @@
 require_once('includes.php');
 $debug = 0;
 $response = '';
+$rawResponse = '';
 $mysqltime = date ("Y-m-d H:i:s");
 
 function testRequest() {
@@ -45,22 +46,18 @@ if (isset($_GET['key4'])) {
 
 
     if ($key1 == 'login') {
-      //http://dev.cody.asia/api/login
+      // http://dev.cody.asia/api/login
+
+      $json = file_get_contents('php://input');
+      $obj = json_decode($json, true);
 
 
-      if (isset($_POST['email'])) {
-        $email = sanitize($_POST['email']);
-      } else {
-        $email = '';
-      }
+      // Get form params and sanitize
+      if (isset($obj['email'])) { $email = sanitize($obj['email']); } else { $email = ''; }
+      if (isset($obj['password'])) { $password = sanitize($obj['password']); } else { $password = ''; }
 
-      if (isset($_POST['password'])) {
-        $password = sanitize($_POST['password']);
-      } else {
-        $password = '';
-      }
 
-      //Check if Authenticated User
+      // Check if Authenticated User
       if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
 
         $date = strtotime("+7 day");
@@ -72,19 +69,19 @@ if (isset($_GET['key4'])) {
           'expires_at' => $date,
         );
 
+
         $response = json_encode($rawResponse);
 
 
-      } else { //If user/pass combination is wrong
+      } else { // If user/pass combination is wrong
 
 
         $rawResponse = array (
-            'message' => 'The given data was invalid.',
-            'errors' => array()
+            'message' => 'The given data was invalid.'
             );
 
-          //print_r($rawResponse);
-
+          // print_r($rawResponse);
+/*
           if ($email == '') {
             array_push($rawResponse['errors'], array('email' =>
             array (
@@ -100,6 +97,7 @@ if (isset($_GET['key4'])) {
             )));
 
           }
+          */
 
 
           $response = json_encode($rawResponse);
@@ -127,10 +125,16 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'register') {
 
-      $name = sanitize($_POST['name']);
-      $email = sanitize($_POST['email']);
-      $password = sanitize($_POST['password']);
-      $passwordConfirmation = sanitize($_POST['password_confirmation']);
+      // Get form params and sanitize
+
+      $json = file_get_contents('php://input');
+      $obj = json_decode($json, true);
+
+      if (isset($obj['name'])) { $name = sanitize($obj['name']); } else { $name = ''; }
+      if (isset($obj['email'])) { $email = sanitize($obj['email']); } else { $email = ''; }
+      if (isset($obj['password'])) { $password = sanitize($obj['password']); } else { $password = ''; }
+      if (isset($obj['password_confirmation'])) { $passwordConfirmation = sanitize($obj['password_confirmation']); } else { $passwordConfirmation = ''; }
+
 
       // Check if all detaills are complete to register
       if ($name != ''
@@ -148,14 +152,33 @@ if (isset($_GET['key4'])) {
             "created_at" => $mysqltime,
             "id" => $userID
         );
+        $response = json_encode($rawResponse);
 
 
       } else { //Registration errors
 
-      }
+
+        $rawResponse = array (
+          'message' => 'There is an error with your Registration'
+        );
 
 
-      $response = json_encode($rawResponse);
+
+          array_push($rawResponse, array('email' =>
+          array (
+            0 => 'The email has already been taken.',
+          )));
+
+          $response = json_encode($rawResponse);
+
+
+
+      } // End of registration
+
+
+
+
+
     //  http_response_code(201);
 
       //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
@@ -261,7 +284,7 @@ if (isset($_GET['key4'])) {
   }
 
 
-    echo $response;
+echo $response;
 
 
 
