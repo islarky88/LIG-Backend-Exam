@@ -82,7 +82,7 @@ if (isset($_GET['key4'])) {
 
 
       // Check if Authenticated User
-      if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
+      if ($email == 'user' && $password == 'user') {
 
         $date = strtotime("+7 day");
         $date = date('Y-m-d H:i:s', $date);
@@ -101,15 +101,19 @@ if (isset($_GET['key4'])) {
 
 
         $rawResponse = array (
-  'message' => 'The given data was invalid.',
-  'errors' =>
-  array (
-    'email' =>
-    array (
-      0 => 'These credentials do not match our records.',
-    ),
-  ),
-);
+          'message' => 'The given data was invalid.',
+          'errors' =>
+          array (
+            'email' =>
+            array (
+              0 => 'The email field is required.',
+            ),
+            'password' =>
+            array (
+              0 => 'The password field is required.',
+            ),
+          ),
+        );
 
           // print_r($rawResponse);
 /*
@@ -161,6 +165,8 @@ if (isset($_GET['key4'])) {
       $json = @file_get_contents('php://input');
       $obj = json_decode($json, true);
 
+    //  print_r($obj);
+
       if (isset($obj['name'])) { $name = sanitize($obj['name']); } else { $name = ''; }
       if (isset($obj['email'])) { $email = sanitize($obj['email']); } else { $email = ''; }
       if (isset($obj['password'])) { $password = sanitize($obj['password']); } else { $password = ''; }
@@ -190,24 +196,19 @@ if (isset($_GET['key4'])) {
 
 
         $rawResponse = array (
-          'message' => 'The given data was invalid.',
-          'errors' =>
-          array (
-            'name' =>
-            array (
-              0 => 'The name field is required.',
-            ),
-          ),
-        );
+                  'message' => 'The given data was invalid.',
+                  'errors' =>
+                  array (
+                    'name' =>
+                    array (
+                      0 => 'The name field is required.',
+                    ),
+                  ),
+                );
+                echo json_encode($rawResponse);
+                echo json_encode($rawResponse);
 
-echo '{
-    "message": "The given data was invalid.",
-    "errors": {
-        "name": [
-            "The name field is required."
-        ]
-    }
-}';
+          print_r($rawResponse['errors']);
 
 
           //echo json_encode($rawResponse);
