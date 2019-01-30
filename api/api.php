@@ -45,7 +45,7 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'posts') {
 
-      if (isset($obj['image'])) { $image = sanitize($obj['image']); } else { $image = ''; }
+      if (isset($obj['image'])) { $image = mysqli_real_escape_string($obj['image']); } else { $image = ''; }
       if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
       if (isset($obj['content'])) { $content = mysqli_real_escape_string($obj['content']); } else { $content = ''; }
 
@@ -64,6 +64,7 @@ if (isset($_GET['key4'])) {
         ),
       );
 
+      header("HTTP/1.1 201 Created");
       echo json_encode($rawResponse);
 
 } // End of posts key1
@@ -189,6 +190,7 @@ if (isset($_GET['key4'])) {
             "created_at" => $mysqltime,
             "id" => $userID
         );
+        header("HTTP/1.1 201 Created");
         echo json_encode($rawResponse);
 
 
