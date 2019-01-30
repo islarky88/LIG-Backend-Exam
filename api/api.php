@@ -226,7 +226,7 @@ if (isset($_GET['key4'])) {
       } else {
 
         $newtitle = $key2;
-        $slug = cleanurl($key2);
+        $slug = textToSlug($key2);
 
           $rawResponse = array (
             'data' =>
@@ -308,9 +308,61 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'posts') {
 
+      // comment delete
+      if ($key3 == 'comments' && $key2 != '') {
+
+        // Check if post exists
+
+        // $query = intval($key4);
+        // $result = $mysqli->query("SELECT * FROM comments WHERE id = '$query' LIMIT 1");
+        // $main = $result->fetch_object();
+        // $commentid = $main->id;
+
+        if ($commentid != NULL) {
+
+            // $mysqli->query("DELETE FROM posts WHERE `id` = '$id'");
+            echo '{"status": "comment deleted successfully"}';
+
+        } else {
+
+            echo '{"status": "comment does not exist"}';
+
+        }
+
+      // post delete
+      } else {
+
+        // Check if post exists
+
+        // $query = textToSlug($key2);
+        // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
+        // $main = $result->fetch_object();
+        // $postid = $main->id;
+
+        if ($postid != NULL) {
+
+            // $mysqli->query("DELETE FROM posts WHERE `id` = '$id'");
+            echo '{"status": "post deleted successfully"}';
+
+        } else {
+
+            echo '{"status": "post does not exist"}';
+
+        }
+
+      } // end of post delete
+
+    } // end of delete of posts/comments
+
+
+  } else if ($method === 'PATCH') {
+    //http://dev.cody.asia/api/posts/first-post
+
+    if ($key1 == 'posts') {
+
       // Check if post exists
 
-      // $query = cleanurl($key2);
+      // $query = textToSlug($key2);
       // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
       // $main = $result->fetch_object();
       // $postid = $main->id;
@@ -318,7 +370,26 @@ if (isset($_GET['key4'])) {
       if ($postid != NULL) {
 
           //deletePost();
-          echo '{"status": "record deleted successfully"}';
+          $updatedTitle = 'Updated title';
+          $updatedContent = 'Updated Lorem Ipsum Content Holder';
+          $createPostDate = 'created at date here';
+
+          $rawResponse = array(
+              "data" => array(
+                  "id" => 1,
+                  "user_id" => 1,
+                  "title" => $updatedTitle,
+                  "slug" => textToSlug($updatedTitle),
+                  "content" => $updatedContent,
+                  "created_at" => $createPostDate,
+                  "updated_at" => $mysqltime,
+                  "deleted_at" => null
+              )
+          );
+
+          echo json_encode($rawResponse);
+
+
 
       } else {
 

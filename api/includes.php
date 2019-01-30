@@ -4,7 +4,7 @@ function sanitize($toclean) {
 	return $clean;
 }
 
-function cleanurl($toclean) {
+function textToSlug($toclean) {
   $clean = str_replace('_', ' ', $toclean);
   $clean = str_replace('-', ' ', $clean);
   $clean = rawurlencode($clean);
