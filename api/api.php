@@ -1,8 +1,8 @@
 <?php
 require_once('includes.php');
 $debug = 0;
-$response = '';
-$rawresponse = '';
+
+$mysqltime = date ("Y-m-d H:i:s");
 
 function testRequest() {
 
@@ -62,46 +62,43 @@ if (isset($_GET['key4'])) {
         $date = strtotime("+7 day");
         $date = date('Y-m-d H:i:s', $date);
 
-        $rawresponse = array (
+        $rawResponse = array (
           'token' => md5($email.$password),
           'token_type' => 'bearer',
           'expires_at' => $date,
         );
 
-        $response = json_encode($rawresponse);
+        $response = json_encode($rawResponse);
 
 
       } else { //If user/pass combination is wrong
 
 
-        $rawresponse = array (
+        $rawResponse = array (
             'message' => 'The given data was invalid.',
-            'errors' =>
-            array (
-              'email' =>
-              array (
-                0 => 'The email field is required.',
-              ),
-              'password' =>
-              array (
-                0 => 'The password field is required.',
-              ),
-            ),
-          );
-          print_r($rawresponse);
+            'errors' => array()
+            );
+
+          //print_r($rawResponse);
 
 
-              $emailerror = array('email' =>
-              array (
-                0 => 'The email field is required.',
-              ));
+          $emailerror = array('email' =>
+          array (
+            0 => 'The email field is required.',
+          ));
 
-              array_push($tempArray, $emailerror);
+          $passworderror = array('email' =>
+          array (
+            0 => 'The email field is required.',
+          ));
 
+              array_push($rawResponse['errors'], $emailerror);
+
+              print_r($rawResponse);
 
 
 
-                $response = json_encode($rawresponse);
+                $response = json_encode($rawResponse);
 
 
 
@@ -119,20 +116,37 @@ if (isset($_GET['key4'])) {
 
   } else if ($method === 'GET') {
 
+    //echo $_GET['page'];
+
     if ($key1 == 'posts') {
 
-      $rawresponse = array (
+      if (isset($_GET['page']) && $_GET['page'] > 0) {
+        $currentPage = intval($_GET['page']);
+      }
+
+
+      // fetched data from database
+      $pid = 1;
+      $uid = 1;
+      $title = 'Title Holder -Page ' . $currentPage;
+      $urlslug = '';
+      $content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+      $created = '2019-01-23 02:06:06';
+      $updated = $mysqltime;
+      
+      //preparing raw response
+      $rawResponse = array (
       'data' =>
       array (
         0 =>
         array (
-          'id' => 1,
-          'user_id' => 1,
-          'title' => 'new title',
-          'slug' => 'new-title',
-          'content' => 'content of the post',
-          'created_at' => '2019-01-23 02:06:06',
-          'updated_at' => '2019-01-23 02:13:26',
+          'id' => $pid,
+          'user_id' => $uid,
+          'title' => $title,
+          'slug' => $urlslug,
+          'content' => $content,
+          'created_at' => $created,
+          'updated_at' => $updated,
           'deleted_at' => NULL,
         ),
       ),
@@ -155,7 +169,7 @@ if (isset($_GET['key4'])) {
       ),
     );
 
-     $response = json_encode($rawresponse);
+     $response = json_encode($rawResponse);
 
 
    } //end of if posts
