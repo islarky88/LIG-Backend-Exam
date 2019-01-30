@@ -34,13 +34,53 @@ if (isset($_GET['key4'])) {
 
   if ($method === 'POST') {
 
+
+print_r($_REQUEST);
+
     if ($key1 == 'login') {
 
-      $response['token'] = md5('test');
-      $response['username'] = 'user';
-      $response['password'] = 'pass';
+    //  $user = $_REQUEST
+  //    $response['username'] = 'user';
+    //  $response['password'] = 'pass';
 
-      print_r($_REQUEST);
+    if (isset($_POST['email'])) {
+      $email = santize($_POST['email']);
+    } else {
+      $email = '';
+    }
+
+    if (isset($_POST['password'])) {
+      $password = sanitize($_POST['password']);
+    } else {
+      $password = '';
+    }
+
+    //Check if Authenticated User
+    if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
+
+
+
+
+      $date = strtotime("+7 day");
+      $date = date('Y-m-d H:i:s', $date);
+
+
+
+    $rawresponse = array (
+      'token' => md5($email.$password),
+      'token_type' => 'bearer',
+      'expires_at' => $date,
+    );
+
+    } else {
+
+    }
+
+    $emailresponse = array('email' =>
+    array (
+      0 => 'The email field is required.',
+    ));
+
 
     $rawreponse = array (
         'message' => 'The given data was invalid.',
@@ -69,7 +109,6 @@ if (isset($_GET['key4'])) {
   } else if ($method === 'GET') {
 
     if ($key1 == 'posts') {
-
 
       $rawreponse = array (
       'data' =>
@@ -122,9 +161,9 @@ if (isset($_GET['key4'])) {
 
   // Output JSON response
   if ($response != '') {
-    echo $response;
+//    echo $response;
   } else {
-    print_r($_REQUEST);
+//    print_r($_REQUEST);
   }
 
 
