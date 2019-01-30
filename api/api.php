@@ -33,17 +33,20 @@ if (isset($_SERVER['REQUEST_METHOD'])) {
 
     if ($key1 == 'login') {
 
-print_r($_REQUEST);
+      $response['token'] = md5('test');
+      $response['username'] = 'user';
+      $response['password'] = 'pass';
+
 
     }
 
   } else if ($method === 'GET') {
 
-    if ($key1 == 'login') {
+
 
 print_r($_REQUEST);
 
-    }
+
 
   } else if ($method === 'PUT') {
 
