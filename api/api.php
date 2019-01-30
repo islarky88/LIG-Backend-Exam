@@ -69,7 +69,7 @@ if (isset($_GET['key4'])) {
 
 
       // Check if Authenticated User
-      if ($email == 'user' && $password == 'user') {
+      if ($email == 'islarky88@gmail.com' && $password == 'password') {
 
         $date = strtotime("+7 day");
         $date = date('Y-m-d H:i:s', $date);
@@ -84,22 +84,27 @@ if (isset($_GET['key4'])) {
 
       } else { // If user/pass combination is wrong
 
-        $rawResponse = array (
-          'message' => 'The given data was invalid.',
-          'errors' =>
-          array (
-            'email' =>
-            array (
-              0 => 'The email field is required.',
-            ),
-            'password' =>
-            array (
-              0 => 'The password field is required.',
-            ),
-          ),
-        );
 
-          echo json_encode($rawResponse);
+        $rawResponse = array (
+                  'message' => 'Login Error.',
+                );
+
+        if ($email == '') {
+          $rawResponse['errors']['email'] = 'The email field is required.';
+        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $rawResponse['errors']['email'] = 'Email address is not a valid format.';
+        }
+
+        if ($password == '') {
+          $rawResponse['errors']['password'] = 'The password field is required.';
+        } else {
+          $rawResponse['errors']['password'] = 'User/Pass combination is incorrect.';
+        }
+
+
+        header("HTTP/1.1 422 Unprocessable Entity");
+        //  print_r($rawResponse);
+        echo json_encode($rawResponse);
 
       } //end of login check
 
