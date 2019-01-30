@@ -156,18 +156,29 @@ if (isset($_GET['key4'])) {
       } else { //Registration errors
 
         $rawResponse = array (
-                  'message' => 'The given data was invalid.',
-                  'errors' =>
-                  array (
-                    'name' =>
-                    array (
-                      0 => 'The name field is required.',
-                    ),
-                  ),
+                  'message' => 'Registration Error.',
                 );
 
+        if ($name == '') {
+          $rawResponse['errors']['name'] = 'The name field is required.';
+        }
+
+        if ($email == '') {
+          $rawResponse['errors']['email'] = 'The email field is required.';
+        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          $rawResponse['errors']['email'] = 'Email address is not a valid format.';
+        }
+
+        if ($password == '') {
+          $rawResponse['errors']['password'] = 'The password field is required.';
+        } else if ($password != $passwordConfirmation) {
+          $rawResponse['errors']['password'] = 'Passwords do not match.';
+        }
+
+
+        header("HTTP/1.1 422 Unprocessable Entity");
+        //  print_r($rawResponse);
         echo json_encode($rawResponse);
-        print_r($rawResponse['errors']);
 
       } // End of registration
 
