@@ -14,15 +14,23 @@ function testRequest() {
 
 if (isset($_GET['key1'])) {
   $key1 = trim(preg_replace('/[^A-Za-z0-9-]/','',$_GET['key1']));
+} else {
+  $key1 = '';
 }
 if (isset($_GET['key2'])) {
   $key2 = trim(preg_replace('/[^A-Za-z0-9-]/','',$_GET['key2']));
+} else {
+  $key2 = '';
 }
 if (isset($_GET['key3'])) {
   $key3 = trim(preg_replace('/[^A-Za-z0-9-]/','',$_GET['key3']));
+} else {
+  $key3 = '';
 }
 if (isset($_GET['key4'])) {
   $key4 = trim(preg_replace('/[^A-Za-z0-9-]/','',$_GET['key4']));
+} else {
+  $key4 = '';
 }
 
 
@@ -41,7 +49,7 @@ if (isset($_GET['key4'])) {
 
 
       if (isset($_POST['email'])) {
-        $email = santize($_POST['email']);
+        $email = sanitize($_POST['email']);
       } else {
         $email = '';
       }
@@ -53,7 +61,7 @@ if (isset($_GET['key4'])) {
       }
 
       //Check if Authenticated User
-      if ($email == '' && $password == '') {
+      if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
 
         $date = strtotime("+7 day");
         $date = date('Y-m-d H:i:s', $date);
@@ -102,8 +110,56 @@ if (isset($_GET['key4'])) {
       } //end of login check
 
 
+    } //end of key1 login
+
+    if ($key1 == 'logout') {
+
+      $rawResponse = array (
+        'logout' => 'success',
+      );
+
+      $response = json_encode($rawResponse);
+
+      //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
+      //logout();
+
+    }
+
+    if ($key1 == 'register') {
+
+      $name = sanitize($_POST['name']);
+      $email = sanitize($_POST['email']);
+      $password = sanitize($_POST['password']);
+      $passwordConfirmation = sanitize($_POST['password_confirmation']);
+
+      // Check if all detaills are complete to register
+      if ($name != ''
+        && $email != ''
+        && $password != ''
+        && $password == $passwordConfirmation) {
+
+          // should check detabase for ID autoIncrement of new registrations
+          $userID = 1;
+
+        $rawResponse =   array (
+            "name" => $name,
+            "email" => $email,
+            "updated_at" => $mysqltime,
+            "created_at" => $mysqltime,
+            "id" => $userID
+        );
 
 
+      } else { //Registration errors
+
+      }
+
+
+      $response = json_encode($rawResponse);
+    //  http_response_code(201);
+
+      //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
+      //logout();
 
     } //end of key1 login
 
