@@ -35,25 +35,49 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'posts') {
 
-      if (isset($obj['image'])) { $image = mysqli_real_escape_string($obj['image']); } else { $image = ''; }
       if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
       if (isset($obj['content'])) { $content = mysqli_real_escape_string($obj['content']); } else { $content = ''; }
+      if (isset($obj['image'])) { $image = mysqli_real_escape_string($obj['image']); } else { $image = ''; }
 
-      $rawResponse = array (
-        'data' =>
-        array (
-          'title' => 'first post',
-          'content' => 'content of the post',
-          'slug' => 'first-post',
-          'updated_at' => '2019-01-23 02:06:06',
-          'created_at' => '2019-01-23 02:06:06',
-          'id' => 1,
-          'user_id' => 1,
-        ),
-      );
+      if ($title != '' && $content != '') {
 
-      header("HTTP/1.1 201 Created");
-      echo json_encode($rawResponse);
+          $rawResponse = array (
+            'data' =>
+            array (
+              'title' => $title,
+              'content' => $content,
+              'slug' => titleToSlug($title),
+              'updated_at' => $mysqltime,
+              'created_at' => $mysqltime,
+              'id' => 1,
+              'user_id' => 1,
+            ),
+          );
+
+          header("HTTP/1.1 201 Created");
+          echo json_encode($rawResponse);
+
+      } else {
+
+        $rawResponse = array (
+                  'message' => 'Given data is invalid.',
+                );
+
+        if ($title == '') {
+          $rawResponse['errors']['title'] = 'Title should not be blank.';
+        }
+
+        if ($content == '') {
+          $rawResponse['errors']['content'] = 'Content should not be empty.';
+        }
+
+
+        header("HTTP/1.1 422 Unprocessable Entity");
+        //  print_r($rawResponse);
+        echo json_encode($rawResponse);
+
+      }
+
 
 } // End of posts key1
 
