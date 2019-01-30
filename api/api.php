@@ -43,12 +43,36 @@ if (isset($_GET['key4'])) {
 
   if ($method === 'POST') {
 
+    if ($key1 == 'posts') {
+
+      if (isset($obj['image'])) { $image = sanitize($obj['image']); } else { $image = ''; }
+      if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
+      if (isset($obj['content'])) { $content = mysqli_real_escape_string($obj['content']); } else { $content = ''; }
+
+
+
+      $rawResponse = array (
+        'data' =>
+        array (
+          'title' => 'first post',
+          'content' => 'content of the post',
+          'slug' => 'first-post',
+          'updated_at' => '2019-01-23 02:06:06',
+          'created_at' => '2019-01-23 02:06:06',
+          'id' => 1,
+          'user_id' => 1,
+        ),
+      );
+
+      echo json_encode($rawResponse);
+
+} // End of posts key1
 
 
     if ($key1 == 'login') {
       // http://dev.cody.asia/api/login
 
-      $json = file_get_contents('php://input');
+      $json = @file_get_contents('php://input');
       $obj = json_decode($json, true);
 
 
@@ -70,15 +94,22 @@ if (isset($_GET['key4'])) {
         );
 
 
-        $response = json_encode($rawResponse);
+        echo json_encode($rawResponse);
 
 
       } else { // If user/pass combination is wrong
 
 
         $rawResponse = array (
-            'message' => 'The given data was invalid.'
-            );
+  'message' => 'The given data was invalid.',
+  'errors' =>
+  array (
+    'email' =>
+    array (
+      0 => 'These credentials do not match our records.',
+    ),
+  ),
+);
 
           // print_r($rawResponse);
 /*
@@ -100,7 +131,7 @@ if (isset($_GET['key4'])) {
           */
 
 
-          $response = json_encode($rawResponse);
+          echo json_encode($rawResponse);
 
 
 
@@ -116,7 +147,7 @@ if (isset($_GET['key4'])) {
         'logout' => 'success',
       );
 
-      $response = json_encode($rawResponse);
+      echo json_encode($rawResponse);
 
       //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
       //logout();
@@ -127,7 +158,7 @@ if (isset($_GET['key4'])) {
 
       // Get form params and sanitize
 
-      $json = file_get_contents('php://input');
+      $json = @file_get_contents('php://input');
       $obj = json_decode($json, true);
 
       if (isset($obj['name'])) { $name = sanitize($obj['name']); } else { $name = ''; }
@@ -152,24 +183,34 @@ if (isset($_GET['key4'])) {
             "created_at" => $mysqltime,
             "id" => $userID
         );
-        $response = json_encode($rawResponse);
+        echo json_encode($rawResponse);
 
 
       } else { //Registration errors
 
 
         $rawResponse = array (
-          'message' => 'There is an error with your Registration'
+          'message' => 'The given data was invalid.',
+          'errors' =>
+          array (
+            'name' =>
+            array (
+              0 => 'The name field is required.',
+            ),
+          ),
         );
 
+echo '{
+    "message": "The given data was invalid.",
+    "errors": {
+        "name": [
+            "The name field is required."
+        ]
+    }
+}';
 
 
-          array_push($rawResponse, array('email' =>
-          array (
-            0 => 'The email has already been taken.',
-          )));
-
-          $response = json_encode($rawResponse);
+          //echo json_encode($rawResponse);
 
 
 
@@ -195,22 +236,56 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'posts') {
 
-      if ($key2 == 'new-titles') {
-        //http://dev.cody.asia/api/posts/new-titles
+      if ($key2 != '') { // this depends on the post URL slug
 
-        $rawResponse = array (
-          'data' =>
-          array (
-            'id' => 1,
-            'user_id' => 1,
-            'title' => 'new title',
-            'slug' => 'new-title',
-            'content' => 'content of the post',
-            'created_at' => '2019-01-23 02:06:06',
-            'updated_at' => '2019-01-23 02:13:26',
-            'deleted_at' => NULL,
-          ),
-        );
+        if ($key3 == 'comments') {
+          // gets the comments
+        // http://dev.cody.asia/api/posts/new-title/comments
+
+          $rawResponse = array (
+            'data' =>
+            array (
+              0 =>
+              array (
+                'id' => 1,
+                'title' => NULL,
+                'body' => 'content of the post',
+                'commentable_type' => 'App\\Post',
+                'commentable_id' => 1,
+                'creator_type' => 'App\\User',
+                'creator_id' => 1,
+                '_lft' => 1,
+                '_rgt' => 2,
+                'parent_id' => NULL,
+                'created_at' => '2019-01-23 02:09:12',
+                'updated_at' => '2019-01-23 02:09:12',
+              ),
+            ),
+          );
+
+
+      } else {
+
+        $newtitle = $key2;
+        $slug = cleanurl($key2);
+
+          $rawResponse = array (
+            'data' =>
+            array (
+              'id' => 1,
+              'user_id' => 1,
+              'title' => $newtitle,
+              'slug' => $slug,
+              'content' => 'content of the post',
+              'created_at' => '2019-01-23 02:06:06',
+              'updated_at' => '2019-01-23 02:13:26',
+              'deleted_at' => NULL,
+            ),
+          );
+
+          echo json_encode($rawResponse);
+
+        }
 
 
 
@@ -266,7 +341,7 @@ if (isset($_GET['key4'])) {
         ),
       );
 
-       $response = json_encode($rawResponse);
+       echo json_encode($rawResponse);
 
      }
 
@@ -284,7 +359,6 @@ if (isset($_GET['key4'])) {
   }
 
 
-echo $response;
 
 
 
