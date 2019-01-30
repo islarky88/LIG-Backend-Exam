@@ -2,7 +2,7 @@
 require_once('includes.php');
 $debug = 0;
 $response = '';
-$rawreponse = '';
+$rawresponse = '';
 
 function testRequest() {
 
@@ -35,73 +35,84 @@ if (isset($_GET['key4'])) {
   if ($method === 'POST') {
 
 
-print_r($_REQUEST);
 
     if ($key1 == 'login') {
 
-    //  $user = $_REQUEST
-  //    $response['username'] = 'user';
-    //  $response['password'] = 'pass';
+      print_r($_REQUEST);
 
-    if (isset($_POST['email'])) {
-      $email = santize($_POST['email']);
-    } else {
-      $email = '';
-    }
+      //  $user = $_REQUEST
+    //    $response['username'] = 'user';
+      //  $response['password'] = 'pass';
 
-    if (isset($_POST['password'])) {
-      $password = sanitize($_POST['password']);
-    } else {
-      $password = '';
-    }
+      if (isset($_POST['email'])) {
+        $email = santize($_POST['email']);
+      } else {
+        $email = '';
+      }
 
-    //Check if Authenticated User
-    if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
+      if (isset($_POST['password'])) {
+        $password = sanitize($_POST['password']);
+      } else {
+        $password = '';
+      }
 
+      //Check if Authenticated User
+      if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
 
+        $date = strtotime("+7 day");
+        $date = date('Y-m-d H:i:s', $date);
 
+        $rawresponse = array (
+          'token' => md5($email.$password),
+          'token_type' => 'bearer',
+          'expires_at' => $date,
+        );
 
-      $date = strtotime("+7 day");
-      $date = date('Y-m-d H:i:s', $date);
-
-
-
-    $rawresponse = array (
-      'token' => md5($email.$password),
-      'token_type' => 'bearer',
-      'expires_at' => $date,
-    );
-
-    } else {
-
-    }
-
-    $emailresponse = array('email' =>
-    array (
-      0 => 'The email field is required.',
-    ));
+        $response = json_encode($rawresponse);
 
 
-    $rawreponse = array (
-        'message' => 'The given data was invalid.',
-        'errors' =>
-        array (
-          'email' =>
-          array (
-            0 => 'The email field is required.',
-          ),
-          'password' =>
-          array (
-            0 => 'The password field is required.',
-          ),
-        ),
-      );
+      } else { //If user/pass combination is wrong
+
+
+        $rawresponse = array (
+            'message' => 'The given data was invalid.',
+            'errors' =>
+            array (
+              'email' =>
+              array (
+                0 => 'The email field is required.',
+              ),
+              'password' =>
+              array (
+                0 => 'The password field is required.',
+              ),
+            ),
+          );
+          print_r($rawresponse);
+
+
+              $emailerror = array('email' =>
+              array (
+                0 => 'The email field is required.',
+              ));
+
+              array_push($tempArray, $emailerror);
+
+
+
+
+                $response = json_encode($rawresponse);
+
+
+
+
+      } //end of login check
 
 
 
 
 
-    }
+    } //end of key1 login
 
 
 
@@ -110,7 +121,7 @@ print_r($_REQUEST);
 
     if ($key1 == 'posts') {
 
-      $rawreponse = array (
+      $rawresponse = array (
       'data' =>
       array (
         0 =>
@@ -144,7 +155,7 @@ print_r($_REQUEST);
       ),
     );
 
-     $response = json_encode($rawreponse);
+     $response = json_encode($rawresponse);
 
 
    } //end of if posts
@@ -159,12 +170,9 @@ print_r($_REQUEST);
 
   }
 
-  // Output JSON response
-  if ($response != '') {
-//    echo $response;
-  } else {
-//    print_r($_REQUEST);
-  }
+
+    echo $response;
+
 
 
 
