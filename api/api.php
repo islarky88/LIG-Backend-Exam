@@ -37,12 +37,8 @@ if (isset($_GET['key4'])) {
 
 
     if ($key1 == 'login') {
+      //http://dev.cody.asia/api/login
 
-      print_r($_REQUEST);
-
-      //  $user = $_REQUEST
-    //    $response['username'] = 'user';
-      //  $response['password'] = 'pass';
 
       if (isset($_POST['email'])) {
         $email = santize($_POST['email']);
@@ -57,7 +53,7 @@ if (isset($_GET['key4'])) {
       }
 
       //Check if Authenticated User
-      if ($email == 'bertrand_kintanar@ligph.com' && $password == 'password') {
+      if ($email == '' && $password == '') {
 
         $date = strtotime("+7 day");
         $date = date('Y-m-d H:i:s', $date);
@@ -81,24 +77,24 @@ if (isset($_GET['key4'])) {
 
           //print_r($rawResponse);
 
+          if ($email == '') {
+            array_push($rawResponse['errors'], array('email' =>
+            array (
+              0 => 'The email field is required.',
+            )));
 
-          $emailerror = array('email' =>
-          array (
-            0 => 'The email field is required.',
-          ));
+          }
 
-          $passworderror = array('email' =>
-          array (
-            0 => 'The email field is required.',
-          ));
+          if ($password == '') {
+            array_push($rawResponse['errors'], array('password' =>
+            array (
+              0 => 'The password field is required.',
+            )));
 
-              array_push($rawResponse['errors'], $emailerror);
-
-              print_r($rawResponse);
+          }
 
 
-
-                $response = json_encode($rawResponse);
+          $response = json_encode($rawResponse);
 
 
 
@@ -120,56 +116,80 @@ if (isset($_GET['key4'])) {
 
     if ($key1 == 'posts') {
 
-      if (isset($_GET['page']) && $_GET['page'] > 0) {
-        $currentPage = intval($_GET['page']);
-      }
+      if ($key2 == 'new-titles') {
+        //http://dev.cody.asia/api/posts/new-titles
+
+        $rawResponse = array (
+          'data' =>
+          array (
+            'id' => 1,
+            'user_id' => 1,
+            'title' => 'new title',
+            'slug' => 'new-title',
+            'content' => 'content of the post',
+            'created_at' => '2019-01-23 02:06:06',
+            'updated_at' => '2019-01-23 02:13:26',
+            'deleted_at' => NULL,
+          ),
+        );
 
 
-      // fetched data from database
-      $pid = 1;
-      $uid = 1;
-      $title = 'Title Holder - Page ' . $currentPage;
-      $urlslug = 'first-post';
-      $content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
-      $created = '2019-01-23 02:06:06';
-      $updated = $mysqltime;
 
-      //preparing raw response
-      $rawResponse = array (
-      'data' =>
-      array (
-        0 =>
+      } else {
+        //http://dev.cody.asia/api/posts?=page=1
+
+
+        if (isset($_GET['page']) && $_GET['page'] > 0) {
+          $currentPage = intval($_GET['page']);
+        }
+
+        // fetched data from database
+        $pid = 1;
+        $uid = 1;
+        $title = 'Title Holder - Page ' . $currentPage;
+        $urlslug = 'first-post';
+        $content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+        $created = '2019-01-23 02:06:06';
+        $updated = $mysqltime;
+
+        //preparing raw response
+        $rawResponse = array (
+        'data' =>
         array (
-          'id' => $pid,
-          'user_id' => $uid,
-          'title' => $title,
-          'slug' => $urlslug,
-          'content' => $content,
-          'created_at' => $created,
-          'updated_at' => $updated,
-          'deleted_at' => NULL,
+          0 =>
+          array (
+            'id' => $pid,
+            'user_id' => $uid,
+            'title' => $title,
+            'slug' => $urlslug,
+            'content' => $content,
+            'created_at' => $created,
+            'updated_at' => $updated,
+            'deleted_at' => NULL,
+          ),
         ),
-      ),
-      'links' =>
-      array (
-        'first' => 'http://127.0.0.1:8000/api/posts?page=1',
-        'last' => 'http://127.0.0.1:8000/api/posts?page=1',
-        'prev' => NULL,
-        'next' => NULL,
-      ),
-      'meta' =>
-      array (
-        'current_page' => 1,
-        'from' => 1,
-        'last_page' => 1,
-        'path' => 'http://127.0.0.1:8000/api/posts',
-        'per_page' => 15,
-        'to' => 1,
-        'total' => 1,
-      ),
-    );
+        'links' =>
+        array (
+          'first' => 'http://127.0.0.1:8000/api/posts?page=1',
+          'last' => 'http://127.0.0.1:8000/api/posts?page=1',
+          'prev' => NULL,
+          'next' => NULL,
+        ),
+        'meta' =>
+        array (
+          'current_page' => 1,
+          'from' => 1,
+          'last_page' => 1,
+          'path' => 'http://127.0.0.1:8000/api/posts',
+          'per_page' => 15,
+          'to' => 1,
+          'total' => 1,
+        ),
+      );
 
-     $response = json_encode($rawResponse);
+       $response = json_encode($rawResponse);
+
+     }
 
 
    } //end of if posts
