@@ -1,17 +1,10 @@
 <?php
 require_once('includes.php');
+
 $debug = 0;
 $response = '';
 $rawResponse = '';
 $mysqltime = date ("Y-m-d H:i:s");
-
-function testRequest() {
-
-    echo $_GET['key1'].'-'.$_GET['key2'].'-'.$_GET['key3'].'-'.$_GET['key4'];
-    echo '<br/><br/>';
-    echo $_SERVER['REQUEST_METHOD'];
-
-}
 
 if (isset($_GET['key1'])) {
   $key1 = trim(preg_replace('/[^A-Za-z0-9-]/','',$_GET['key1']));
@@ -34,9 +27,6 @@ if (isset($_GET['key4'])) {
   $key4 = '';
 }
 
-
-
-
   $method = $_SERVER['REQUEST_METHOD'];
 
 // START OF CHECK OF REQUEST METHOD TO IDENTIFY API TYPE
@@ -48,8 +38,6 @@ if (isset($_GET['key4'])) {
       if (isset($obj['image'])) { $image = mysqli_real_escape_string($obj['image']); } else { $image = ''; }
       if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
       if (isset($obj['content'])) { $content = mysqli_real_escape_string($obj['content']); } else { $content = ''; }
-
-
 
       $rawResponse = array (
         'data' =>
@@ -69,13 +57,11 @@ if (isset($_GET['key4'])) {
 
 } // End of posts key1
 
-
     if ($key1 == 'login') {
       // http://dev.cody.asia/api/login
 
       $json = @file_get_contents('php://input');
       $obj = json_decode($json, true);
-
 
       // Get form params and sanitize
       if (isset($obj['email'])) { $email = sanitize($obj['email']); } else { $email = ''; }
@@ -94,12 +80,9 @@ if (isset($_GET['key4'])) {
           'expires_at' => $date,
         );
 
-
         echo json_encode($rawResponse);
 
-
       } else { // If user/pass combination is wrong
-
 
         $rawResponse = array (
           'message' => 'The given data was invalid.',
@@ -116,30 +99,7 @@ if (isset($_GET['key4'])) {
           ),
         );
 
-          // print_r($rawResponse);
-/*
-          if ($email == '') {
-            array_push($rawResponse['errors'], array('email' =>
-            array (
-              0 => 'The email field is required.',
-            )));
-
-          }
-
-          if ($password == '') {
-            array_push($rawResponse['errors'], array('password' =>
-            array (
-              0 => 'The password field is required.',
-            )));
-
-          }
-          */
-
-
           echo json_encode($rawResponse);
-
-
-
 
       } //end of login check
 
@@ -173,7 +133,6 @@ if (isset($_GET['key4'])) {
       if (isset($obj['password'])) { $password = sanitize($obj['password']); } else { $password = ''; }
       if (isset($obj['password_confirmation'])) { $passwordConfirmation = sanitize($obj['password_confirmation']); } else { $passwordConfirmation = ''; }
 
-
       // Check if all detaills are complete to register
       if ($name != ''
         && $email != ''
@@ -181,7 +140,7 @@ if (isset($_GET['key4'])) {
         && $password == $passwordConfirmation) {
 
           // should check detabase for ID autoIncrement of new registrations
-          $userID = 1;
+        $userID = 1;
 
         $rawResponse =   array (
             "name" => $name,
@@ -196,7 +155,6 @@ if (isset($_GET['key4'])) {
 
       } else { //Registration errors
 
-
         $rawResponse = array (
                   'message' => 'The given data was invalid.',
                   'errors' =>
@@ -207,31 +165,13 @@ if (isset($_GET['key4'])) {
                     ),
                   ),
                 );
-                echo json_encode($rawResponse);
-                echo json_encode($rawResponse);
 
-          print_r($rawResponse['errors']);
-
-
-          //echo json_encode($rawResponse);
-
-
+        echo json_encode($rawResponse);
+        print_r($rawResponse['errors']);
 
       } // End of registration
 
-
-
-
-
-    //  http_response_code(201);
-
-      //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
-      //logout();
-
     } //end of key1 login
-
-
-
 
   } else if ($method === 'GET') {
 
@@ -290,11 +230,8 @@ if (isset($_GET['key4'])) {
 
         }
 
-
-
       } else {
         //http://dev.cody.asia/api/posts?=page=1
-
 
         if (isset($_GET['page']) && $_GET['page'] > 0) {
           $currentPage = intval($_GET['page']);
@@ -348,16 +285,32 @@ if (isset($_GET['key4'])) {
 
      }
 
-
    } //end of if posts
 
-//print_r($_REQUEST);
-
-
-
-  } else if ($method === 'PUT') {
-
   } else if ($method === 'DELETE') {
+    //http://dev.cody.asia/api/posts/new-title
+
+    if ($key1 == 'posts') {
+
+      // Check if post exists
+
+      // $query = cleanurl($key2);
+      // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
+      // $main = $result->fetch_object();
+      // $postid = $main->id;
+
+      if ($postid != NULL) {
+
+          //deletePost();
+          echo '{"status": "record deleted successfully"}';
+
+      } else {
+
+          echo '{"status": "post does not exist"}';
+
+      }
+
+    }
 
   }
 

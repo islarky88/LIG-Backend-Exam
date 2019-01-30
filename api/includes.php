@@ -20,4 +20,10 @@ function cleanurl($toclean) {
   return $clean;
 }
 
- ?>
+function testRequest() {
+  echo $_GET['key1'].'-'.$_GET['key2'].'-'.$_GET['key3'].'-'.$_GET['key4'];
+  echo '<br/><br/>';
+  echo $_SERVER['REQUEST_METHOD'];
+}
+
+?>
