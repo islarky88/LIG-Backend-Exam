@@ -1,7 +1,7 @@
 <?php
 require_once('includes.php');
 $debug = 0;
-
+$response = '';
 $mysqltime = date ("Y-m-d H:i:s");
 
 function testRequest() {
@@ -128,12 +128,12 @@ if (isset($_GET['key4'])) {
       // fetched data from database
       $pid = 1;
       $uid = 1;
-      $title = 'Title Holder -Page ' . $currentPage;
-      $urlslug = '';
+      $title = 'Title Holder - Page ' . $currentPage;
+      $urlslug = 'first-post';
       $content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
       $created = '2019-01-23 02:06:06';
       $updated = $mysqltime;
-      
+
       //preparing raw response
       $rawResponse = array (
       'data' =>
