@@ -71,7 +71,7 @@ if (isset($_GET['key4'])) {
                   );
 
           if ($body == '') {
-            $rawResponse['errors']['body'] = 'Comment Body should not be blank.';
+            $rawResponse['errors']['body'][0] = 'Comment Body should not be blank.';
           }
 
           header("HTTP/1.1 422 Unprocessable Entity");
@@ -116,11 +116,11 @@ if (isset($_GET['key4'])) {
                   );
 
           if ($title == '') {
-            $rawResponse['errors']['title'] = 'Title should not be blank.';
+            $rawResponse['errors']['title'][0] = 'Title should not be blank.';
           }
 
           if ($content == '') {
-            $rawResponse['errors']['content'] = 'Content should not be empty.';
+            $rawResponse['errors']['content'][0] = 'Content should not be empty.';
           }
 
 
@@ -168,15 +168,15 @@ if (isset($_GET['key4'])) {
                 );
 
         if ($email == '') {
-          $rawResponse['errors']['email'] = 'The email field is required.';
+          $rawResponse['errors']['email'][0] = 'The email field is required.';
         } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $rawResponse['errors']['email'] = 'Email address is not a valid format.';
+          $rawResponse['errors']['email'][0] = 'Email address is not a valid format.';
         }
 
         if ($password == '') {
-          $rawResponse['errors']['password'] = 'The password field is required.';
+          $rawResponse['errors']['password'][0] = 'The password field is required.';
         } else {
-          $rawResponse['errors']['password'] = 'User/Pass combination is incorrect.';
+          $rawResponse['errors']['password'][0] = 'User/Pass combination is incorrect.';
         }
 
 
@@ -243,19 +243,19 @@ if (isset($_GET['key4'])) {
                 );
 
         if ($name == '') {
-          $rawResponse['errors']['name'] = 'The name field is required.';
+          $rawResponse['errors']['name'][0] = 'The name field is required.';
         }
 
         if ($email == '') {
-          $rawResponse['errors']['email'] = 'The email field is required.';
+          $rawResponse['errors']['email'][0] = 'The email field is required.';
         } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-          $rawResponse['errors']['email'] = 'Email address is not a valid format.';
+          $rawResponse['errors']['email'][0] = 'Email address is not a valid format.';
         }
 
         if ($password == '') {
-          $rawResponse['errors']['password'] = 'The password field is required.';
+          $rawResponse['errors']['password'][0] = 'The password field is required.';
         } else if ($password != $passwordConfirmation) {
-          $rawResponse['errors']['password'] = 'Passwords do not match.';
+          $rawResponse['errors']['password'][0] = 'Passwords do not match.';
         }
 
 
