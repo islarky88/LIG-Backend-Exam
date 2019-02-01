@@ -30,6 +30,264 @@ if (isset($_GET['key4'])) {
 
   $method = $_SERVER['REQUEST_METHOD'];
 
+// auth:api > posts > comments > /api/posts/{post}/comments
+if ($method === 'POST' && $key1 == 'posts' && $key2 != '' && $key3 == 'comments' ) {
+
+  $json = @file_get_contents('php://input');
+    $obj = json_decode($json, true);
+
+    if (isset($obj['body'])) { $body = sanitize($obj['body']); } else { $body = ''; }
+
+    if ($body != '') {
+
+      $rawResponse = array(
+          "data" => array(
+              "body" => $body,
+              "creator_id" => 1,
+              "creator_type" => "App\\User",
+              "commentable_id" => 1,
+              "commentable_type" => "App\\Post",
+              "parent_id" => null,
+              "_lft" => 1,
+              "_rgt" => 2,
+              "updated_at" => $mysqltime,
+              "created_at" => $mysqltime,
+              "id" => 1
+          )
+      );
+
+      echo json_encode($rawResponse);
+      exit();
+
+    // input errors in commenting
+    } else {
+
+      $rawResponse = array (
+                'message' => 'Given data is invalid.',
+              );
+
+      if ($body == '') {
+        $rawResponse['errors']['body'][0] = 'Comment Body should not be blank.';
+      }
+
+      header("HTTP/1.1 422 Unprocessable Entity");
+      echo json_encode($rawResponse);
+      exit();
+    }
+
+}
+
+// auth:api > posts > comments > /api/posts/{post}/comments/{comment}
+if ($method === 'PATCH' && $key1 == 'posts' && $key2 != '' && $key3 == 'comments' && $key4 != '' ) {
+
+
+    // Check if comment exists
+
+    // $query = intval($key4);
+    // $result = $mysqli->query("SELECT * FROM comments WHERE id = '$query' LIMIT 1");
+    // $main = $result->fetch_object();
+    // $commentid = $main->id;
+
+    // if comment exist based on commendid search
+    if ($commentid != NULL) {
+
+        //$mysqli->query("UPDATE comments SET body = '$commentBody' WHERE id = '$commentid' LIMIT 1");
+          $rawResponse = array (
+            "data" => array (
+                "id" => 1,
+                "title" => null,
+                "body" => $commentBody,
+                "commentable_type" => "App\\Post",
+                "commentable_id" => 1,
+                "creator_type" => "App\\User",
+                "creator_id" => 1,
+                "_lft" => 1,
+                "_rgt" => 2,
+                "parent_id" => null,
+                "created_at" => "2019-01-23 02:09:12",
+                "updated_at" => $mysqltime
+            )
+        );
+
+        echo json_encode($rawResponse);
+
+
+    } else {
+
+        echo '{"status": "comment does not exist"}';
+
+    } // end of  if commentid exist
+
+
+
+}
+
+// auth:api > posts > comments > /api/posts/{post}/comments/{comment}
+if ($method === 'DELETE' && $key1 == 'posts' && $key2 != '' && $key3 == 'comments' && $key4 != '' ) {
+
+  // Check if post exists
+
+  // $query = intval($key4);
+  // $result = $mysqli->query("SELECT * FROM comments WHERE id = '$query' LIMIT 1");
+  // $main = $result->fetch_object();
+  // $commentid = $main->id;
+
+  if ($commentid != NULL) {
+
+      // $mysqli->query("DELETE FROM posts WHERE `id` = '$id'");
+      echo '{"status": "comment deleted successfully"}';
+      exit();
+
+  } else {
+
+      echo '{"status": "comment does not exist"}';
+      exit();
+
+  }
+
+}
+
+// auth:api > posts > /api/posts
+if ($method === 'POST' && $key1 == 'posts') {
+
+    $json = @file_get_contents('php://input');
+    $obj = json_decode($json, true);
+
+    if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
+    if (isset($obj['content'])) { $content = sanitize($obj['content']); } else { $content = ''; }
+    if (isset($obj['image'])) { $image = sanitize($obj['image']); } else { $image = ''; }
+
+    if ($title != '' && $content != '') {
+
+        $rawResponse = array (
+          'data' =>
+          array (
+            'title' => $title,
+            'content' => $content,
+            'slug' => textToSlug($title),
+            'updated_at' => $mysqltime,
+            'created_at' => $mysqltime,
+            'id' => 1,
+            'user_id' => 1,
+          ),
+        );
+
+        header("HTTP/1.1 201 Created");
+        echo json_encode($rawResponse);
+
+    // posting posts errors
+    } else {
+
+      $rawResponse = array (
+                'message' => 'Given data is invalid.',
+              );
+
+      if ($title == '') {
+        $rawResponse['errors']['title'][0] = 'Title should not be blank.';
+      }
+
+      if ($content == '') {
+        $rawResponse['errors']['content'][0] = 'Content should not be empty.';
+      }
+
+
+      header("HTTP/1.1 422 Unprocessable Entity");
+      //  print_r($rawResponse);
+      echo json_encode($rawResponse);
+
+    }
+
+}
+
+// auth:api > posts > /api/posts/{post}
+if ($method === 'PATCH' && $key1 == 'posts' && $key2 != '') {
+
+  // Check if post exists
+
+  // $query = textToSlug($key2);
+  // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
+  // $main = $result->fetch_object();
+  // $postid = $main->id;
+
+  if ($postid != NULL) {
+
+      //$mysqli->query("UPDATE posts SET content = '$updatedContent' WHERE id = '$postid' LIMIT 1");
+      $updatedTitle = 'Updated title';
+      $updatedContent = 'Updated Lorem Ipsum Content Holder';
+      $createPostDate = 'created at date here';
+
+      $rawResponse = array(
+          "data" => array(
+              "id" => 1,
+              "user_id" => 1,
+              "title" => $updatedTitle,
+              "slug" => textToSlug($updatedTitle),
+              "content" => $updatedContent,
+              "created_at" => $createPostDate,
+              "updated_at" => $mysqltime,
+              "deleted_at" => null
+          )
+      );
+
+      echo json_encode($rawResponse);
+
+
+
+  } else {
+
+      echo '{"status": "post does not exist"}';
+
+  }
+
+}
+
+
+// auth:api > posts > /api/posts/{post}
+if ($method === 'DELETE' && $key1 == 'posts' && $key2 != '') {
+
+  // Check if post exists
+
+  // $query = textToSlug($key2);
+  // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
+  // $main = $result->fetch_object();
+  // $postid = $main->id;
+
+  if ($postid != NULL) {
+
+      // $mysqli->query("DELETE FROM posts WHERE `id` = '$id'");
+      echo '{"status": "post deleted successfully"}';
+
+  } else {
+
+      echo '{"status": "post does not exist"}';
+
+  }
+
+
+}
+
+
+// auth:api > /api/logout
+if ($method === 'POST' && $key1 == 'logout') {
+
+  $rawResponse = array (
+    'message' => 'Logout Success',
+  );
+
+  //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
+  //logout();
+
+  echo json_encode($rawResponse);
+
+}
+
+
+// +++++++++++++++++++++++++ END OF NEW API +++++++++++++++++++++++++++++++
+
+
+
+
+
 // START OF CHECK OF REQUEST METHOD TO IDENTIFY API TYPE
 
   if ($method === 'POST') {
@@ -39,96 +297,9 @@ if (isset($_GET['key4'])) {
       // create comment
       if ($key3 == 'comments' && $key2 != '') {
 
-        $json = @file_get_contents('php://input');
-        $obj = json_decode($json, true);
-
-        if (isset($obj['body'])) { $body = sanitize($obj['body']); } else { $body = ''; }
-
-        if ($body != '') {
-
-          $rawResponse = array(
-              "data" => array(
-                  "body" => $body,
-                  "creator_id" => 1,
-                  "creator_type" => "App\\User",
-                  "commentable_id" => 1,
-                  "commentable_type" => "App\\Post",
-                  "parent_id" => null,
-                  "_lft" => 1,
-                  "_rgt" => 2,
-                  "updated_at" => $mysqltime,
-                  "created_at" => $mysqltime,
-                  "id" => 1
-              )
-          );
-
-          echo json_encode($rawResponse);
-
-        // input errors in commenting
-        } else {
-
-          $rawResponse = array (
-                    'message' => 'Given data is invalid.',
-                  );
-
-          if ($body == '') {
-            $rawResponse['errors']['body'][0] = 'Comment Body should not be blank.';
-          }
-
-          header("HTTP/1.1 422 Unprocessable Entity");
-          echo json_encode($rawResponse);
-
-        } // end of comment create/errors
 
       // create post
       } else {
-
-        $json = @file_get_contents('php://input');
-        $obj = json_decode($json, true);
-
-        if (isset($obj['title'])) { $title = sanitize($obj['title']); } else { $title = ''; }
-        if (isset($obj['content'])) { $content = sanitize($obj['content']); } else { $content = ''; }
-        if (isset($obj['image'])) { $image = sanitize($obj['image']); } else { $image = ''; }
-
-        if ($title != '' && $content != '') {
-
-            $rawResponse = array (
-              'data' =>
-              array (
-                'title' => $title,
-                'content' => $content,
-                'slug' => textToSlug($title),
-                'updated_at' => $mysqltime,
-                'created_at' => $mysqltime,
-                'id' => 1,
-                'user_id' => 1,
-              ),
-            );
-
-            header("HTTP/1.1 201 Created");
-            echo json_encode($rawResponse);
-
-        // posting posts errors
-        } else {
-
-          $rawResponse = array (
-                    'message' => 'Given data is invalid.',
-                  );
-
-          if ($title == '') {
-            $rawResponse['errors']['title'][0] = 'Title should not be blank.';
-          }
-
-          if ($content == '') {
-            $rawResponse['errors']['content'][0] = 'Content should not be empty.';
-          }
-
-
-          header("HTTP/1.1 422 Unprocessable Entity");
-          //  print_r($rawResponse);
-          echo json_encode($rawResponse);
-
-        }
 
       } // End of POST posts/comments
 
@@ -190,15 +361,6 @@ if (isset($_GET['key4'])) {
     } //end of key1 login
 
     if ($key1 == 'logout') {
-
-      $rawResponse = array (
-        'message' => 'Logout Success',
-      );
-
-      //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
-      //logout();
-
-      echo json_encode($rawResponse);
 
 
     }
@@ -387,44 +549,10 @@ if (isset($_GET['key4'])) {
       // comment delete
       if ($key3 == 'comments' && $key2 != '') {
 
-        // Check if post exists
 
-        // $query = intval($key4);
-        // $result = $mysqli->query("SELECT * FROM comments WHERE id = '$query' LIMIT 1");
-        // $main = $result->fetch_object();
-        // $commentid = $main->id;
-
-        if ($commentid != NULL) {
-
-            // $mysqli->query("DELETE FROM posts WHERE `id` = '$id'");
-            echo '{"status": "comment deleted successfully"}';
-
-        } else {
-
-            echo '{"status": "comment does not exist"}';
-
-        }
 
       // post delete
       } else {
-
-        // Check if post exists
-
-        // $query = textToSlug($key2);
-        // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
-        // $main = $result->fetch_object();
-        // $postid = $main->id;
-
-        if ($postid != NULL) {
-
-            // $mysqli->query("DELETE FROM posts WHERE `id` = '$id'");
-            echo '{"status": "post deleted successfully"}';
-
-        } else {
-
-            echo '{"status": "post does not exist"}';
-
-        }
 
       } // end of post delete
 
@@ -440,80 +568,11 @@ if (isset($_GET['key4'])) {
       // checks if api request is for comments
       if ($key3 == 'comments' && $key2 != '') {
 
-        // Check if post exists
-
-        // $query = intval($key4);
-        // $result = $mysqli->query("SELECT * FROM comments WHERE id = '$query' LIMIT 1");
-        // $main = $result->fetch_object();
-        // $commentid = $main->id;
-
-        // if comment exist based on commendid search
-        if ($commentid != NULL) {
-
-            //$mysqli->query("UPDATE comments SET body = '$commentBody' WHERE id = '$commentid' LIMIT 1");
-              $rawResponse = array (
-                "data" => array (
-                    "id" => 1,
-                    "title" => null,
-                    "body" => $commentBody,
-                    "commentable_type" => "App\\Post",
-                    "commentable_id" => 1,
-                    "creator_type" => "App\\User",
-                    "creator_id" => 1,
-                    "_lft" => 1,
-                    "_rgt" => 2,
-                    "parent_id" => null,
-                    "created_at" => "2019-01-23 02:09:12",
-                    "updated_at" => $mysqltime
-                )
-            );
-
-
-        } else {
-
-            echo '{"status": "comment does not exist"}';
-
-        } // end of  if commentid exist
 
       // post patch / update?
       } else {
 
-        // Check if post exists
 
-        // $query = textToSlug($key2);
-        // $result = $mysqli->query("SELECT * FROM posts WHERE url = '$query' LIMIT 1");
-        // $main = $result->fetch_object();
-        // $postid = $main->id;
-
-        if ($postid != NULL) {
-
-            //$mysqli->query("UPDATE posts SET content = '$updatedContent' WHERE id = '$postid' LIMIT 1");
-            $updatedTitle = 'Updated title';
-            $updatedContent = 'Updated Lorem Ipsum Content Holder';
-            $createPostDate = 'created at date here';
-
-            $rawResponse = array(
-                "data" => array(
-                    "id" => 1,
-                    "user_id" => 1,
-                    "title" => $updatedTitle,
-                    "slug" => textToSlug($updatedTitle),
-                    "content" => $updatedContent,
-                    "created_at" => $createPostDate,
-                    "updated_at" => $mysqltime,
-                    "deleted_at" => null
-                )
-            );
-
-            echo json_encode($rawResponse);
-
-
-
-        } else {
-
-            echo '{"status": "post does not exist"}';
-
-        }
 
       } // end of posts PATCH
 
