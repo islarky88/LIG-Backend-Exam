@@ -4,6 +4,7 @@ require_once('includes.php');
 $debug = 0;
 $response = '';
 $rawResponse = '';
+
 $mysqltime = date ("Y-m-d H:i:s");
 
 if (isset($_GET['key1'])) {
@@ -97,7 +98,6 @@ if (isset($_GET['key4'])) {
                 'title' => $title,
                 'content' => $content,
                 'slug' => textToSlug($title),
-                'slug' => $image,
                 'updated_at' => $mysqltime,
                 'created_at' => $mysqltime,
                 'id' => 1,
@@ -167,21 +167,21 @@ if (isset($_GET['key4'])) {
                   'message' => 'Login Error.',
                 );
 
+        // checks for blank email or invalid email format
         if ($email == '') {
           $rawResponse['errors']['email'][0] = 'The email field is required.';
         } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
           $rawResponse['errors']['email'][0] = 'Email address is not a valid format.';
         }
 
+        // checks for blank password and user password combination
         if ($password == '') {
           $rawResponse['errors']['password'][0] = 'The password field is required.';
         } else {
           $rawResponse['errors']['password'][0] = 'User/Pass combination is incorrect.';
         }
 
-
         header("HTTP/1.1 422 Unprocessable Entity");
-        //  print_r($rawResponse);
         echo json_encode($rawResponse);
 
       } //end of login check
@@ -192,13 +192,14 @@ if (isset($_GET['key4'])) {
     if ($key1 == 'logout') {
 
       $rawResponse = array (
-        'logout' => 'success',
+        'message' => 'Logout Success',
       );
-
-      echo json_encode($rawResponse);
 
       //CLEAR COOKIE, TOKEN, AUTHENTICATION, ETC CODE
       //logout();
+
+      echo json_encode($rawResponse);
+
 
     }
 
@@ -218,7 +219,7 @@ if (isset($_GET['key4'])) {
 
       // Check if all detaills are complete to register
       if ($name != ''
-        && $email != ''
+        && $email != '' && filter_var($email, FILTER_VALIDATE_EMAIL) == true
         && $password != ''
         && $password == $passwordConfirmation) {
 
@@ -238,9 +239,7 @@ if (isset($_GET['key4'])) {
 
       } else { //Registration errors
 
-        $rawResponse = array (
-                  'message' => 'Registration Error.',
-                );
+        $rawResponse = array ('message' => 'Registration Error.');
 
         if ($name == '') {
           $rawResponse['errors']['name'][0] = 'The name field is required.';
@@ -336,7 +335,7 @@ if (isset($_GET['key4'])) {
         $uid = 1;
         $title = 'Title Holder - Page ' . $currentPage;
         $urlslug = 'first-post';
-        $content = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+        $content = 'Lorrem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
         $created = '2019-01-23 02:06:06';
         $updated = $mysqltime;
 
@@ -344,7 +343,6 @@ if (isset($_GET['key4'])) {
         $rawResponse = array (
         'data' =>
         array (
-          0 =>
           array (
             'id' => $pid,
             'user_id' => $uid,
@@ -354,7 +352,7 @@ if (isset($_GET['key4'])) {
             'created_at' => $created,
             'updated_at' => $updated,
             'deleted_at' => NULL,
-          ),
+          )
         ),
         'links' =>
         array (
@@ -517,11 +515,11 @@ if (isset($_GET['key4'])) {
 
         }
 
-      }
+      } // end of posts PATCH
 
-    }
+    } // end of check key1 posts
 
-  }
+  } // end of method check PATCH
 
 
 

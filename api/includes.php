@@ -1,4 +1,7 @@
 <?php
+$mysqli = new mysqli("localhost:3306", "root", "", "ligexam");
+$mysqli->set_charset("utf8");
+
 function sanitize($toclean) {
 	$clean = preg_replace('/[^A-Za-z0-9-_\.@ ]/','', $toclean);
 	return $clean;
